@@ -19,4 +19,4 @@ COPY --from=publish /opt /opt
 WORKDIR /opt/resource
 ADD binaries .
 
-RUN chmod +x out
+RUN chmod +x check in out
