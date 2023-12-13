@@ -1,0 +1,24 @@
+name: Build & Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout
+      - uses: docker/login-action@v2
+        name: Docker Login
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - name: Build Images
+        run: |
+          docker build --file Dockerfile --tag wapplegate/github-webhook-resource:latest .
+      - name: Deploy Images
+        run: |
+          docker push wapplegate/github-webhook-resource:latest
