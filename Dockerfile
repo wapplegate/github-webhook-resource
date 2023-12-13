@@ -19,4 +19,4 @@ COPY --from=publish /opt /opt
 COPY binaries/check /opt/resource/check
 COPY binaries/in /opt/resource/in
 
-RUN chmod +x check in out
+RUN chmod +x /opt/resource/check /opt/resource/in /opt/resource/out
