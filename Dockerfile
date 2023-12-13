@@ -12,7 +12,7 @@ RUN dotnet publish ./GitHubWebhookResource/Out/Out.csproj -c Release -p:DebugTyp
 
 FROM alpine AS final
 
-RUN apk add --no-cache libstdc++ icu-libs
+RUN apk add --no-cache libstdc++ icu-libs jq
 
 COPY --from=publish /opt /opt
 
