@@ -16,29 +16,35 @@ public class ConcoursePayload
 
 public class Params
 {
-    [JsonPropertyName("file")]
-    public string? File { get; set; }
+    [JsonPropertyName("repository")]
+    public string? Repository { get; set; }
+
+    [JsonPropertyName("owner")]
+    public string? Owner { get; set; }
+
+    [JsonPropertyName("webhook_base_url")]
+    public string? WebhookBaseUrl { get; set; }
+
+    [JsonPropertyName("resource_name")]
+    public string? ResourceName { get; set; }
+
+    [JsonPropertyName("events")]
+    public List<string>? Events { get; set; }
+
+    [JsonPropertyName("webhook_secret")]
+    public string? WebhookSecret { get; set; }
+
+    [JsonPropertyName("webhook_token")]
+    public string? WebhookToken { get; set; }
 }
 
 public class SourceFields
 {
-    [JsonPropertyName("table_name")]
-    public string? TableName { get; set; }
+    [JsonPropertyName("github_base_url")]
+    public string? GitHubBaseUrl { get; set; }
 
-    [JsonPropertyName("key")]
-    public string? Key { get; set; }
-
-    [JsonPropertyName("partition_key")]
-    public string? PartitionKey { get; set; }
-
-    [JsonPropertyName("access_key")]
-    public string? AccessKey { get; set; }
-
-    [JsonPropertyName("secret_key")]
-    public string? SecretKey { get; set; }
-
-    [JsonPropertyName("region")]
-    public string Region { get; set; } = "us-east-1";
+    [JsonPropertyName("github_token")]
+    public string? GitHubToken { get; set; }
 }
 
 public class Version

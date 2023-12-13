@@ -7,7 +7,7 @@ try
 
     var standardInputPayload = Console.ReadLine();
 
-    //Console.Error.WriteLine(standardInputPayload);
+    Console.Error.WriteLine(standardInputPayload);
 
     ArgumentException.ThrowIfNullOrEmpty(standardInputPayload);
 
@@ -16,52 +16,53 @@ try
     ArgumentNullException.ThrowIfNull(concoursePayload);
     ArgumentNullException.ThrowIfNull(concoursePayload.Source);
     ArgumentNullException.ThrowIfNull(concoursePayload.Params);
-    ArgumentNullException.ThrowIfNull(concoursePayload.Params.File);
 
-    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Source.AccessKey);
-    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Source.SecretKey);
-    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Source.TableName);
-    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Source.PartitionKey);
-    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Source.Key);
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.Repository);
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.Owner);
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.WebhookBaseUrl);
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.ResourceName);
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.WebhookSecret);
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.WebhookToken);
 
-    //Console.Error.WriteLine(args[0]);
+    if (concoursePayload.Params.Events == null || !concoursePayload.Params.Events.Any())
+    {
+        throw new Exception("Events must be provided.");
+    }
 
-    // var directory = args[0];
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Source.GitHubBaseUrl);
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Source.GitHubToken);
 
-    // //Console.Error.WriteLine($"The directory is {directory}.");
-    // //Console.Error.WriteLine($"The file name is {concoursePayload.Params.File}.");
+    var payload = new GitHubWebhookPayload
+    {
+        GitHubBaseUrl  = concoursePayload.Source.GitHubBaseUrl,
+        Token          = concoursePayload.Source.GitHubToken,
+        Repository     = concoursePayload.Params.Repository,
+        Owner          = concoursePayload.Params.Owner,
+        WebhookBaseUrl = concoursePayload.Params.WebhookBaseUrl,
+        ResourceName   = concoursePayload.Params.ResourceName,
+        Events         = concoursePayload.Params.Events,
+        WebhookSecret  = concoursePayload.Params.WebhookSecret,
+        WebhookToken   = concoursePayload.Params.WebhookToken
+    };
 
-    // var filePath = Path.Combine(directory, concoursePayload.Params.File);
+    var client = new HttpClient();
+    var service = new GitHubWebhookService(client);
 
-    var fileText = "Hello!";
+    var webhook = await service.DoesWebhookExist(payload);
 
-    // var fileText = (await File.ReadAllTextAsync(filePath)).Replace(Environment.NewLine, string.Empty);
+    if (webhook != null)
+    {
+        var updateResult = await service.UpdateWebhook(payload, webhook.Id);
+    }
+    else
+    {
+        var createResult = await service.CreateWebhook(payload);
+    }
 
-    // Console.Error.WriteLine(fileText);
-
-    // var accessKey = concoursePayload.Source.AccessKey;
-    // var secretKey = concoursePayload.Source.SecretKey;
-
-    // var region = RegionEndpoint.GetBySystemName(concoursePayload.Source.Region);
-
-    // var repository = new Repository(accessKey, secretKey, region);
-
-    // var table        = concoursePayload.Source.TableName;
-    // var partitionKey = concoursePayload.Source.PartitionKey;
-    // var key          = concoursePayload.Source.Key;
-
-    // var values = await repository.GetAll(table, partitionKey, key);
-
-    // if (values.Any(a => a.Value == fileText))
-    // {
-    //     // Return the output for an already existing artifact.
-    // }
-
+    const string value = "testing_value";
     var created = DateTime.UtcNow;
 
-    // await repository.Create(table, partitionKey, key, fileText, created);
-
-    var output = $"{{\"version\": {{ \"value\": \"{fileText}\", \"created\":\"{created}\"}}}}";
+    var output = $"{{\"version\": {{ \"value\": \"{value}\", \"created\":\"{created}\"}}}}";
 
     Console.WriteLine(output);
 }

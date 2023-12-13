@@ -16,4 +16,7 @@ RUN apk add --no-cache libstdc++ icu-libs
 
 COPY --from=publish /opt /opt
 
-RUN chmod +x /opt/resource/out
+WORKDIR /opt/resource
+ADD binaries .
+
+RUN chmod +x out
