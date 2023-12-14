@@ -13,7 +13,7 @@ public class GitHubWebhookService
         this.client = client;
     }
 
-    public async Task<bool> CreateWebhook(GitHubWebhookPayload payload)
+    public async Task CreateWebhook(GitHubWebhookPayload payload)
     {
         var uri = new Uri($"{payload.GitHubBaseUrl}/repos/{payload.Owner}/{payload.Repository}/hooks");
 
@@ -48,15 +48,13 @@ public class GitHubWebhookService
 
         if (!response.IsSuccessStatusCode)
         {
+            var errorBody = await response.Content.ReadAsStringAsync();
+            Console.Error.WriteLine(errorBody);
             throw new Exception("Could not create webhook.");
         }
-
-        var body = await response.Content.ReadAsStringAsync();
-
-        return true;
     }
 
-    public async Task<bool> UpdateWebhook(GitHubWebhookPayload payload, int hookIdentifier)
+    public async Task UpdateWebhook(GitHubWebhookPayload payload, int hookIdentifier)
     {
         var uri = new Uri($"{payload.GitHubBaseUrl}/repos/{payload.Owner}/{payload.Repository}/hooks/{hookIdentifier}");
 
@@ -89,12 +87,10 @@ public class GitHubWebhookService
 
         if (!response.IsSuccessStatusCode)
         {
+            var errorBody = await response.Content.ReadAsStringAsync();
+            Console.Error.WriteLine(errorBody);
             throw new Exception("Could not create webhook.");
         }
-
-        var body = await response.Content.ReadAsStringAsync();
-
-        return true;
     }
 
     public async Task<List<GetWebhooksResponse>> GetWebhooks(GitHubWebhookPayload payload)
@@ -114,6 +110,8 @@ public class GitHubWebhookService
 
         if (!response.IsSuccessStatusCode)
         {
+            var errorBody = await response.Content.ReadAsStringAsync();
+            Console.Error.WriteLine(errorBody);
             throw new Exception("The request to retrieve repository webhooks has failed.");
         }
 
@@ -152,10 +150,11 @@ public class GitHubWebhookService
         var buildPipelineName = Environment.GetEnvironmentVariable("BUILD_PIPELINE_NAME");
 
         var baseUrl = string.IsNullOrWhiteSpace(payload.WebhookBaseUrl) ? atcExternalUrl : payload.WebhookBaseUrl;
+        var pipeline = string.IsNullOrWhiteSpace(payload.Pipeline) ? buildPipelineName : payload.Pipeline;
 
-        var webhookUrl = $"{baseUrl}/api/v1/teams/{buildTeamName}/pipelines/{buildPipelineName}/resources/{payload.ResourceName}/check/webhook?webhook_token={payload.WebhookToken}";
+        var webhookUrl = $"{baseUrl}/api/v1/teams/{buildTeamName}/pipelines/{pipeline}/resources/{payload.ResourceName}/check/webhook?webhook_token={payload.WebhookToken}";
 
-        return Uri.EscapeDataString(webhookUrl);
+        return webhookUrl;
     }
 }
 
@@ -180,6 +179,8 @@ public class GitHubWebhookPayload
     public string? WebhookToken { get; set; }
 
     public string? InsecureSsl { get; set; }
+
+    public string? Pipeline { get; set; }
 }
 
 public class GetWebhooksResponse

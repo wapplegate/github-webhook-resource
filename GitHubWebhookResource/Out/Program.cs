@@ -35,7 +35,9 @@ try
         WebhookToken   = concoursePayload.Params.WebhookToken,
         WebhookBaseUrl = concoursePayload.Params.WebhookBaseUrl,
         Events         = concoursePayload.Params.Events,
-        WebhookSecret  = concoursePayload.Params.WebhookSecret
+        WebhookSecret  = concoursePayload.Params.WebhookSecret,
+        InsecureSsl    = concoursePayload.Params.InsecureSsl,
+        Pipeline       = concoursePayload.Params.Pipeline
     };
 
     var client = new HttpClient();
@@ -50,22 +52,21 @@ try
             throw new Exception("Could not determine an identifier for the existing webhook.");
         }
         Console.Error.WriteLine("Attempting to update the webhook...");
-        var updateResult = await service.UpdateWebhook(payload, webhook.Id.Value);
+        await service.UpdateWebhook(payload, webhook.Id.Value);
     }
     else
     {
         Console.Error.WriteLine("Attempting to create the webhook...");
-        var createResult = await service.CreateWebhook(payload);
+        await service.CreateWebhook(payload);
     }
 
     var created = DateTime.UtcNow;
 
-    var output = $"{{\"version\": {{ \"value\": \"test\", \"created\":\"{created}\"}}}}";
+    var output = $"{{\"version\": {{ \"created\":\"{created}\"}}}}";
 
     Console.WriteLine(output);
 }
 catch (Exception exception)
 {
-    Console.Error.WriteLine($"An exception occurred...");
     Console.Error.WriteLine($"{exception.Message}");
 }
