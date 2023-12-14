@@ -151,7 +151,7 @@ public class GitHubWebhookService
         var buildTeamName = Environment.GetEnvironmentVariable("BUILD_TEAM_NAME");
         var buildPipelineName = Environment.GetEnvironmentVariable("BUILD_PIPELINE_NAME");
 
-        var baseUrl = string.IsNullOrEmpty(payload.WebhookBaseUrl) ? atcExternalUrl : payload.WebhookBaseUrl;
+        var baseUrl = string.IsNullOrWhiteSpace(payload.WebhookBaseUrl) ? atcExternalUrl : payload.WebhookBaseUrl;
 
         var webhookUrl = $"{baseUrl}/api/v1/teams/{buildTeamName}/pipelines/{buildPipelineName}/resources/{payload.ResourceName}/check/webhook?webhook_token={payload.WebhookToken}";
 

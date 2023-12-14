@@ -37,7 +37,7 @@ public class Params
     [JsonPropertyName("webhook_token")]
     public string? WebhookToken { get; set; }
 
-    [JsonPropertyName("webhook_token")]
+    [JsonPropertyName("insecure_ssl")]
     public string? InsecureSsl { get; set; }
 
     [JsonPropertyName("pipeline")]
