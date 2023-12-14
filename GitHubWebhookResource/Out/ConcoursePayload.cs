@@ -29,13 +29,19 @@ public class Params
     public string? ResourceName { get; set; }
 
     [JsonPropertyName("events")]
-    public List<string>? Events { get; set; }
+    public List<string>? Events { get; set; } = new List<string>();
 
     [JsonPropertyName("webhook_secret")]
     public string? WebhookSecret { get; set; }
 
     [JsonPropertyName("webhook_token")]
     public string? WebhookToken { get; set; }
+
+    [JsonPropertyName("webhook_token")]
+    public string? InsecureSsl { get; set; }
+
+    [JsonPropertyName("pipeline")]
+    public string? Pipeline { get; set; }
 }
 
 public class SourceFields

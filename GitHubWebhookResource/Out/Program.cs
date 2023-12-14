@@ -17,56 +17,55 @@ try
     ArgumentNullException.ThrowIfNull(concoursePayload.Source);
     ArgumentNullException.ThrowIfNull(concoursePayload.Params);
 
-    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.Repository);
-    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.Owner);
-    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.WebhookBaseUrl);
-    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.ResourceName);
-    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.WebhookSecret);
-    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.WebhookToken);
-
-    if (concoursePayload.Params.Events == null || !concoursePayload.Params.Events.Any())
-    {
-        throw new Exception("Events must be provided.");
-    }
-
     ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Source.GitHubBaseUrl);
     ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Source.GitHubToken);
+
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.Owner);
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.Repository);
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.ResourceName);
+    ArgumentException.ThrowIfNullOrEmpty(concoursePayload.Params.WebhookToken);
 
     var payload = new GitHubWebhookPayload
     {
         GitHubBaseUrl  = concoursePayload.Source.GitHubBaseUrl,
         Token          = concoursePayload.Source.GitHubToken,
-        Repository     = concoursePayload.Params.Repository,
         Owner          = concoursePayload.Params.Owner,
-        WebhookBaseUrl = concoursePayload.Params.WebhookBaseUrl,
+        Repository     = concoursePayload.Params.Repository,
         ResourceName   = concoursePayload.Params.ResourceName,
+        WebhookToken   = concoursePayload.Params.WebhookToken,
+        WebhookBaseUrl = concoursePayload.Params.WebhookBaseUrl,
         Events         = concoursePayload.Params.Events,
-        WebhookSecret  = concoursePayload.Params.WebhookSecret,
-        WebhookToken   = concoursePayload.Params.WebhookToken
+        WebhookSecret  = concoursePayload.Params.WebhookSecret
     };
 
     var client = new HttpClient();
     var service = new GitHubWebhookService(client);
 
-    var webhook = await service.DoesWebhookExist(payload);
+    var webhook = await service.GetMatchingWebhook(payload);
 
     if (webhook != null)
     {
-        var updateResult = await service.UpdateWebhook(payload, webhook.Id);
+        if (webhook.Id == null)
+        {
+            throw new Exception("Could not determine an identifier for the existing webhook.");
+        }
+        Console.Error.WriteLine("Attempting to update the webhook...");
+        var updateResult = await service.UpdateWebhook(payload, webhook.Id.Value);
     }
     else
     {
+        Console.Error.WriteLine("Attempting to create the webhook...");
         var createResult = await service.CreateWebhook(payload);
     }
 
-    const string value = "testing_value";
     var created = DateTime.UtcNow;
 
-    var output = $"{{\"version\": {{ \"value\": \"{value}\", \"created\":\"{created}\"}}}}";
+    var output = $"{{\"version\": {{ \"value\": \"test\", \"created\":\"{created}\"}}}}";
 
     Console.WriteLine(output);
 }
 catch (Exception exception)
 {
+    Console.Error.WriteLine($"An exception occurred...");
     Console.Error.WriteLine($"{exception.Message}");
 }

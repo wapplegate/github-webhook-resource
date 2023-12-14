@@ -27,7 +27,7 @@ public class GitHubWebhookService
             Config = new CreateWebhookConfig
             {
                 ContentType = "json",
-                InsecureSsl = "0",
+                InsecureSsl = string.IsNullOrWhiteSpace(payload.InsecureSsl) ? "0" : payload.InsecureSsl,
                 Secret      = payload.WebhookSecret,
                 Url         = webhookUrl
             }
@@ -68,7 +68,7 @@ public class GitHubWebhookService
             Config = new CreateWebhookConfig
             {
                 ContentType = "json",
-                InsecureSsl = "0",
+                InsecureSsl = string.IsNullOrWhiteSpace(payload.InsecureSsl) ? "0" : payload.InsecureSsl,
                 Secret      = payload.WebhookSecret,
                 Url         = webhookUrl
             }
@@ -114,7 +114,7 @@ public class GitHubWebhookService
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new Exception("Request to retrieve webhooks has failed.");
+            throw new Exception("The request to retrieve repository webhooks has failed.");
         }
 
         var body = await response.Content.ReadAsStringAsync();
@@ -128,15 +128,11 @@ public class GitHubWebhookService
         return webhooks;
     }
 
-    public async Task<GetWebhooksResponse?> DoesWebhookExist(GitHubWebhookPayload payload)
+    public async Task<GetWebhooksResponse?> GetMatchingWebhook(GitHubWebhookPayload payload)
     {
         var url = GenerateWebhookUrl(payload);
-        var webhooks = await GetWebhooks(payload);
 
-        if (webhooks == null)
-        {
-            throw new Exception();
-        }
+        var webhooks = await GetWebhooks(payload);
 
         foreach (var webhook in webhooks)
         {
@@ -145,6 +141,7 @@ public class GitHubWebhookService
                 return webhook;
             }
         }
+
         return null;
     }
 
@@ -158,11 +155,11 @@ public class GitHubWebhookService
 
         var webhookUrl = $"{baseUrl}/api/v1/teams/{buildTeamName}/pipelines/{buildPipelineName}/resources/{payload.ResourceName}/check/webhook?webhook_token={payload.WebhookToken}";
 
-        return webhookUrl;
+        return Uri.EscapeDataString(webhookUrl);
     }
 }
 
-public class GitHubWebhookPayload
+public record GitHubWebhookPayload
 {
     public string? GitHubBaseUrl { get; set; }
 
@@ -181,42 +178,44 @@ public class GitHubWebhookPayload
     public string? WebhookSecret { get; set; }
 
     public string? WebhookToken { get; set; }
+
+    public string? InsecureSsl { get; set; }
 }
 
-public class GetWebhooksResponse
+public abstract record GetWebhooksResponse
 {
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public int? Id { get; set; }
 
     [JsonPropertyName("url")]
-    public string Url { get; set; }
+    public string? Url { get; set; }
 
     [JsonPropertyName("test_url")]
-    public string TestUrl { get; set; }
+    public string? TestUrl { get; set; }
 
     [JsonPropertyName("ping_url")]
-    public string PingUrl { get; set; }
+    public string? PingUrl { get; set; }
 
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [JsonPropertyName("events")]
-    public List<string> Events { get; set; }
+    public List<string> Events { get; set; } = new List<string>();
 
     [JsonPropertyName("active")]
     public bool Active { get; set; }
 
     [JsonPropertyName("config")]
-    public GetWebhooksConfig Config { get; set; }
+    public GetWebhooksConfig? Config { get; set; }
 
     [JsonPropertyName("updated_at")]
-    public string UpdatedAt { get; set; }
+    public string? UpdatedAt { get; set; }
 
     [JsonPropertyName("created_at")]
-    public string CreatedAt { get; set; }
+    public string? CreatedAt { get; set; }
 }
 
-public record GetWebhooksConfig
+public abstract record GetWebhooksConfig
 {
     [JsonPropertyName("url")]
     public string? Url { get; set; }
