@@ -159,7 +159,7 @@ public class GitHubWebhookService
     }
 }
 
-public record GitHubWebhookPayload
+public class GitHubWebhookPayload
 {
     public string? GitHubBaseUrl { get; set; }
 
@@ -182,7 +182,7 @@ public record GitHubWebhookPayload
     public string? InsecureSsl { get; set; }
 }
 
-public abstract record GetWebhooksResponse
+public class GetWebhooksResponse
 {
     [JsonPropertyName("id")]
     public int? Id { get; set; }
@@ -215,7 +215,7 @@ public abstract record GetWebhooksResponse
     public string? CreatedAt { get; set; }
 }
 
-public abstract record GetWebhooksConfig
+public class GetWebhooksConfig
 {
     [JsonPropertyName("url")]
     public string? Url { get; set; }
