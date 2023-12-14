@@ -53,11 +53,13 @@ try
         }
         Console.Error.WriteLine("Attempting to update the webhook...");
         await service.UpdateWebhook(payload, webhook.Id.Value);
+        Console.Error.WriteLine("Webhook updated successfully.");
     }
     else
     {
         Console.Error.WriteLine("Attempting to create the webhook...");
         await service.CreateWebhook(payload);
+        Console.Error.WriteLine("Webhook created successfully.");
     }
 
     var created = DateTime.UtcNow;
