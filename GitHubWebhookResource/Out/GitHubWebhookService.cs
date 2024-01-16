@@ -62,6 +62,7 @@ public class GitHubWebhookService
 
         var requestBody = new CreateWebhookPayload
         {
+            Active = true,
             Events = payload.Events,
             Config = new CreateWebhookConfig
             {
