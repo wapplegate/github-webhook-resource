@@ -202,7 +202,7 @@ public class GetWebhooksResponse
     public string? Name { get; set; }
 
     [JsonPropertyName("events")]
-    public List<string> Events { get; set; } = new List<string>();
+    public List<string> Events { get; set; } = [];
 
     [JsonPropertyName("active")]
     public bool Active { get; set; }

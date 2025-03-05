@@ -27,7 +27,7 @@ resources:
       github_token: ((personal_access_token))
   
 jobs:
-  - name: create-github-webhooks
+  - name: create-github-webhook
     plan:
       - put: create-pull-request-webhook
         resource: github-webhook
