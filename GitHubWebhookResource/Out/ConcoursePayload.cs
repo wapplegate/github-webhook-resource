@@ -29,7 +29,7 @@ public class Params
     public string? ResourceName { get; set; }
 
     [JsonPropertyName("events")]
-    public List<string>? Events { get; set; } = new List<string>();
+    public List<string>? Events { get; set; } = [];
 
     [JsonPropertyName("webhook_secret")]
     public string? WebhookSecret { get; set; }

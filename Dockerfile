@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS publish
+FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS publish
 
 RUN apk add clang build-base zlib-dev
 

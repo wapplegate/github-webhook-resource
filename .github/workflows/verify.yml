@@ -15,6 +15,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-      - name: Build Images
+      - name: Build Image
         run: |
-          docker build --file Dockerfile --tag wapplegate/github-webhook-resource:latest .
+          docker build --file Dockerfile --tag wapplegate/github-webhook-resource:alpha .
+      - name: Deploy Image
+        run: |
+          docker push wapplegate/github-webhook-resource:alpha
