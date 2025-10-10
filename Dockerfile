@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS publish
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS publish
 
 RUN apk add clang build-base zlib-dev
 
@@ -10,7 +10,7 @@ COPY . .
 
 RUN dotnet publish ./GitHubWebhookResource/Out/Out.csproj -c Release -p:DebugType=None --runtime linux-musl-x64 -o /opt/resource
 
-FROM alpine AS final
+FROM alpine:3.22 AS final
 
 RUN apk add --no-cache libstdc++ icu-libs jq
 

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="GitHubWebhookResource.Tests/GitHubWebhookResource.Tests.csproj" />
+  <Project Path="Out/Out.csproj" />
+</Solution>
